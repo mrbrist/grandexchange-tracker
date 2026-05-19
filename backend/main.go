@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+// Some cron jobs will need to be put here to keep the database updated as well as back fill the database in the event the server is offline for some time, the will pull from the osrs api for historic item price data with the goal being all data points being stored and updated every 5 mins with the real time api
+
 func main() {
 	envCfg := utils.SetupEnvCfg()
 
@@ -18,6 +20,10 @@ func main() {
 
 	// System
 	mux.HandleFunc("/health", cfg.Health)
+
+	// API
+	mux.HandleFunc("/items", cfg.Items)
+	mux.HandleFunc("/item/{id}", cfg.Item)
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Env.Port,
