@@ -8,7 +8,8 @@ import (
 )
 
 type EnvCfg struct {
-	Port string
+	Port       string
+	APIAppName string
 }
 
 func SetupEnvCfg() *EnvCfg {
@@ -19,7 +20,13 @@ func SetupEnvCfg() *EnvCfg {
 		log.Fatal("PORT environment variable is not set")
 	}
 
+	appName := os.Getenv("API_APP_NAME")
+	if appName == "" {
+		log.Fatal("API_APP_NAME environment variable is not set")
+	}
+
 	return &EnvCfg{
-		Port: port,
+		Port:       port,
+		APIAppName: appName,
 	}
 }

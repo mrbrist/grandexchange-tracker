@@ -3,5 +3,6 @@ package handlers
 import "backend/internal/utils"
 
 type APIConfig struct {
-	Env *utils.EnvCfg
+	Env              *utils.EnvCfg
+	GlobalItemsStore *utils.Items
 }

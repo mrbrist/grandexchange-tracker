@@ -3,6 +3,7 @@ package main
 import (
 	"backend/internal/handlers"
 	"backend/internal/utils"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -12,8 +13,16 @@ import (
 func main() {
 	envCfg := utils.SetupEnvCfg()
 
+	itemMappingData, err := utils.GetItemMappingData(envCfg.APIAppName)
+
+	if err != nil {
+		fmt.Println("FAILED TO GET ITEM MAPPING DATA...")
+		return
+	}
+
 	cfg := &handlers.APIConfig{
-		Env: envCfg,
+		Env:              envCfg,
+		GlobalItemsStore: &itemMappingData,
 	}
 
 	mux := http.NewServeMux()
