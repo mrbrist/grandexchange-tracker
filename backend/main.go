@@ -31,7 +31,8 @@ func main() {
 	mux.HandleFunc("/health", cfg.Health)
 
 	// API
-	mux.HandleFunc("/items", cfg.Items)
+	mux.HandleFunc("/items_info", cfg.ItemsInfo)
+	mux.HandleFunc("/items_list", cfg.ItemsList)
 	mux.HandleFunc("/item/{id}", cfg.Item)
 
 	srv := &http.Server{
