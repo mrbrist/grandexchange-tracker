@@ -2,7 +2,7 @@
 CREATE TABLE ge_price_history (
     id BIGSERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL,
-    price_timestamp TIMESTAMP NOT NULL,
+    price_timestamp BIGINT NOT NULL,
     -- price data
     avg_high_price INTEGER NOT NULL,
     avg_low_price INTEGER NOT NULL,

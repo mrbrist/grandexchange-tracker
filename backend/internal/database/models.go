@@ -11,7 +11,7 @@ import (
 type GePriceHistory struct {
 	ID             int64
 	ItemID         int32
-	PriceTimestamp time.Time
+	PriceTimestamp int64
 	AvgHighPrice   int32
 	AvgLowPrice    int32
 	HighVolume     int64

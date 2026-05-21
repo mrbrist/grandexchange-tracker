@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"backend/internal/utils"
+	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -16,16 +17,6 @@ func (cfg *APIConfig) Item(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// FOR TESTING
-	// err = cfg.DB.AddItemHistory(r.Context(), database.AddItemHistoryParams{
-	// 	ItemID:         int32(id),
-	// 	PriceTimestamp: time.Now(),
-	// 	AvgHighPrice:   0,
-	// 	AvgLowPrice:    0,
-	// 	LowVolume:      0,
-	// 	HighVolume:     0,
-	// })
-
 	history, err := cfg.DB.GetItemHistory(r.Context(), int32(id))
 	if err != nil {
 		utils.RespondWithError(w, 500, "db error", err)
@@ -33,4 +24,11 @@ func (cfg *APIConfig) Item(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.RespondWithJSON(w, 200, history)
+}
+
+func (cfg *APIConfig) Test(w http.ResponseWriter, r *http.Request) {
+	err := utils.UpdatePriceHistory1h(cfg.Env.APIAppName, cfg.DB)
+	if err != nil {
+		fmt.Println(err)
+	}
 }

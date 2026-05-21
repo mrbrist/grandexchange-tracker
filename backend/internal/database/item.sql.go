@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"time"
 )
 
 const addItemHistory = `-- name: AddItemHistory :exec
@@ -24,7 +23,7 @@ VALUES ($1, $2, $3, $4, $5, $6)
 
 type AddItemHistoryParams struct {
 	ItemID         int32
-	PriceTimestamp time.Time
+	PriceTimestamp int64
 	AvgHighPrice   int32
 	AvgLowPrice    int32
 	HighVolume     int64
