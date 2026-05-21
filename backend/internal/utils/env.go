@@ -10,6 +10,7 @@ import (
 type EnvCfg struct {
 	Port       string
 	APIAppName string
+	DB_URL     string
 }
 
 func SetupEnvCfg() *EnvCfg {
@@ -25,8 +26,14 @@ func SetupEnvCfg() *EnvCfg {
 		log.Fatal("API_APP_NAME environment variable is not set")
 	}
 
+	dbUrl := os.Getenv("DB_URL")
+	if dbUrl == "" {
+		log.Fatal("DB_URL environment variable is not set")
+	}
+
 	return &EnvCfg{
 		Port:       port,
 		APIAppName: appName,
+		DB_URL:     dbUrl,
 	}
 }

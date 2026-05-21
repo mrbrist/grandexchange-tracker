@@ -1,3 +1,5 @@
+include backend/.env
+
 .PHONY: setup setup-fe setup-be start-be start-fe dev
 
 setup: setup-be setup-fe
@@ -39,3 +41,16 @@ start-fe:
 	cd frontend && npm run dev
 
 dev: start-be start-fe
+
+# ---------- DATABASE ----------
+generatesql:
+	cd backend && sqlc generate
+
+gooseup:
+	cd backend && goose postgres $(DB_URL) -dir "sql/schema" up
+
+goosedown:
+	cd backend && goose postgres $(DB_URL) -dir "sql/schema" down
+
+goosereset:
+	cd backend && goose postgres $(DB_URL) -dir "sql/schema" reset
