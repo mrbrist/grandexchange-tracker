@@ -42,6 +42,31 @@ func (q *Queries) AddItemHistory(ctx context.Context, arg AddItemHistoryParams) 
 	return err
 }
 
+const countAllRecords = `-- name: CountAllRecords :one
+SELECT COUNT(*) AS total_records
+FROM ge_price_history
+`
+
+func (q *Queries) CountAllRecords(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countAllRecords)
+	var total_records int64
+	err := row.Scan(&total_records)
+	return total_records, err
+}
+
+const countItemUpdates = `-- name: CountItemUpdates :one
+SELECT COUNT(*) AS update_count
+FROM ge_price_history
+WHERE item_id = $1
+`
+
+func (q *Queries) CountItemUpdates(ctx context.Context, itemID int32) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countItemUpdates, itemID)
+	var update_count int64
+	err := row.Scan(&update_count)
+	return update_count, err
+}
+
 const getItemHistory = `-- name: GetItemHistory :many
 SELECT id, item_id, price_timestamp, avg_high_price, avg_low_price, high_volume, low_volume, created_at
 FROM ge_price_history
@@ -78,4 +103,16 @@ func (q *Queries) GetItemHistory(ctx context.Context, itemID int32) ([]GePriceHi
 		return nil, err
 	}
 	return items, nil
+}
+
+const getLatestTimestamp = `-- name: GetLatestTimestamp :one
+SELECT COALESCE(MAX(price_timestamp), 0)::BIGINT AS latest_timestamp
+FROM ge_price_history
+`
+
+func (q *Queries) GetLatestTimestamp(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getLatestTimestamp)
+	var latest_timestamp int64
+	err := row.Scan(&latest_timestamp)
+	return latest_timestamp, err
 }

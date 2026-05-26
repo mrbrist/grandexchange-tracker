@@ -53,7 +53,7 @@ func main() {
 	mux.HandleFunc("/item/{id}", cfg.Item)
 
 	// TESTING
-	// mux.HandleFunc("/item/test", cfg.Test)
+	mux.HandleFunc("/test", cfg.Test)
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Env.Port,

@@ -32,19 +32,39 @@ func StartScheduling(appName string, DB *database.Queries) error {
 
 	fmt.Println("Creating scheduler job...")
 
+	ts, err := DB.GetLatestTimestamp(context.Background())
+	if err != nil {
+		return err
+	}
+
+	// now := time.Now().Unix()
+
+	lastUpdate := time.Unix(ts, 0)
+	fmt.Printf("%slast update:%s %d\n", ColorRed, ColorNone, lastUpdate.Unix())
+	fmt.Printf("%snow:%s %d\n", ColorRed, ColorNone, time.Now().Unix())
+
+	shouldRunNow := time.Now().Unix()-lastUpdate.Unix() >= int64(time.Hour.Seconds())*2
+
+	fmt.Printf("%stime since update:%s %d\n", ColorRed, ColorNone, time.Now().Unix()-lastUpdate.Unix())
+
 	_, err = s.NewJob(
 		gocron.DurationJob(time.Hour),
 		gocron.NewTask(func() error {
-			fmt.Println("RUNNING PRICE HISTORY JOB")
+			fmt.Printf("%sRUNNING PRICE HISTORY JOB%s\n", ColorPurple, ColorNone)
 			return UpdatePriceHistory1h(appName, DB)
 		}),
-		gocron.WithStartAt(
-			gocron.WithStartImmediately(),
-		),
 	)
-
 	if err != nil {
 		return err
+	}
+
+	if shouldRunNow {
+		fmt.Printf("%sData is stale → running initial update immediately%s\n", ColorYellow, ColorNone)
+		go func() {
+			_ = UpdatePriceHistory1h(appName, DB)
+		}()
+	} else {
+		fmt.Printf("%sData is fresh → scheduler will handle next run%s\n", ColorYellow, ColorNone)
 	}
 
 	fmt.Println("Starting scheduler...")

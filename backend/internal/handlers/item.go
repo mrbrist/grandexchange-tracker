@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"backend/internal/utils"
+	"context"
 	"net/http"
 	"strconv"
 )
@@ -25,9 +26,11 @@ func (cfg *APIConfig) Item(w http.ResponseWriter, r *http.Request) {
 	utils.RespondWithJSON(w, 200, history)
 }
 
-// func (cfg *APIConfig) Test(w http.ResponseWriter, r *http.Request) {
-// 	err := utils.UpdatePriceHistory1h(cfg.Env.APIAppName, cfg.DB)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// }
+func (cfg *APIConfig) Test(w http.ResponseWriter, r *http.Request) {
+	ret, err := cfg.DB.CountAllRecords(context.Background())
+	if err != nil {
+		utils.RespondWithError(w, 500, "test error", err)
+	}
+
+	utils.RespondWithJSON(w, 200, ret)
+}
