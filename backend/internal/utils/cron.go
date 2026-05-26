@@ -102,7 +102,8 @@ func UpdatePriceHistory1h(appName string, DB *database.Queries) error {
 			LowVolume:      int64(item.LowPriceVolume),
 		})
 		if err != nil {
-			fmt.Printf("failed to add history to database: %s", err)
+			// Disable error from flooding terminal since its always duplicate error
+			// fmt.Printf("failed to add history to database: %s", err)
 			continue
 		}
 	}
