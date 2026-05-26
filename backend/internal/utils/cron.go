@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/go-co-op/gocron/v2"
 )
 
 type ItemPriceHistoryDataPoint struct {
@@ -20,6 +22,37 @@ type ItemPriceHistoryDataPoint struct {
 type ItemPriceHistory1h struct {
 	Data      map[string]ItemPriceHistoryDataPoint `json:"data"`
 	Timestamp int64                                `json:"timestamp"`
+}
+
+func StartScheduling(appName string, DB *database.Queries) error {
+	s, err := gocron.NewScheduler()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Creating scheduler job...")
+
+	_, err = s.NewJob(
+		gocron.DurationJob(time.Hour),
+		gocron.NewTask(func() error {
+			fmt.Println("RUNNING PRICE HISTORY JOB")
+			return UpdatePriceHistory1h(appName, DB)
+		}),
+		gocron.WithStartAt(
+			gocron.WithStartImmediately(),
+		),
+	)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Starting scheduler...")
+	s.Start()
+
+	fmt.Println("Scheduler started successfully")
+
+	return nil
 }
 
 func UpdatePriceHistory1h(appName string, DB *database.Queries) error {

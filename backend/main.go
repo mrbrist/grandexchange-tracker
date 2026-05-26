@@ -36,6 +36,12 @@ func main() {
 		GlobalItemsStore: &itemMappingData,
 	}
 
+	// Start cron scheduling
+	err = utils.StartScheduling(envCfg.APIAppName, dbQueries)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	mux := http.NewServeMux()
 
 	// System
@@ -47,7 +53,7 @@ func main() {
 	mux.HandleFunc("/item/{id}", cfg.Item)
 
 	// TESTING
-	mux.HandleFunc("/item/test", cfg.Test)
+	// mux.HandleFunc("/item/test", cfg.Test)
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Env.Port,
