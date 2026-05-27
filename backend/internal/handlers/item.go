@@ -26,10 +26,19 @@ func (cfg *APIConfig) Item(w http.ResponseWriter, r *http.Request) {
 	utils.RespondWithJSON(w, 200, history)
 }
 
-func (cfg *APIConfig) Test(w http.ResponseWriter, r *http.Request) {
+func (cfg *APIConfig) Count(w http.ResponseWriter, r *http.Request) {
 	ret, err := cfg.DB.CountAllRecords(context.Background())
 	if err != nil {
-		utils.RespondWithError(w, 500, "test error", err)
+		utils.RespondWithError(w, 500, "error getting datapoint count", err)
+	}
+
+	utils.RespondWithJSON(w, 200, ret)
+}
+
+func (cfg *APIConfig) LastUpdate(w http.ResponseWriter, r *http.Request) {
+	ret, err := cfg.DB.GetLatestTimestamp(context.Background())
+	if err != nil {
+		utils.RespondWithError(w, 500, "error getting latest update timestamp", err)
 	}
 
 	utils.RespondWithJSON(w, 200, ret)

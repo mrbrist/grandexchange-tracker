@@ -128,5 +128,6 @@ func UpdatePriceHistory1h(appName string, DB *database.Queries) error {
 		}
 	}
 	fmt.Printf("Added new data to database with timestamp: %d\n", pricehistory1h.Timestamp)
+	fmt.Printf("%swaiting for next update in 1h...%s\n", ColorGreen, ColorNone)
 	return nil
 }
