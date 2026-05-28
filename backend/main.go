@@ -49,7 +49,7 @@ func main() {
 
 	// API
 	// mux.HandleFunc("/items_info", cfg.ItemsInfo)
-	mux.HandleFunc("/items_list", cfg.ItemsList)
+	mux.HandleFunc("/list", cfg.ItemsList)
 	mux.HandleFunc("/item/{id}", cfg.Item)
 
 	// TESTING
