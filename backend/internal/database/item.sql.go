@@ -22,12 +22,12 @@ VALUES ($1, $2, $3, $4, $5, $6)
 `
 
 type AddItemHistoryParams struct {
-	ItemID         int32
-	PriceTimestamp int64
-	AvgHighPrice   int32
-	AvgLowPrice    int32
-	HighVolume     int64
-	LowVolume      int64
+	ItemID         int32 `json:"itemId"`
+	PriceTimestamp int64 `json:"priceTimestamp"`
+	AvgHighPrice   int32 `json:"avgHighPrice"`
+	AvgLowPrice    int32 `json:"avgLowPrice"`
+	HighVolume     int64 `json:"highVolume"`
+	LowVolume      int64 `json:"lowVolume"`
 }
 
 func (q *Queries) AddItemHistory(ctx context.Context, arg AddItemHistoryParams) error {

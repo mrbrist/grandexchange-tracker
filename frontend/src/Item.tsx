@@ -1,25 +1,29 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { getItem, type ItemPriceData } from "./api/getItem";
+import {
+  getItem,
+  type GetItemResponse,
+  type ItemPriceHistory,
+} from "./api/getItem";
 import { useEffect, useState } from "react";
 
 async function handleItemPrices(
   id: string,
-  set: React.Dispatch<React.SetStateAction<ItemPriceData[] | undefined>>,
+  set: React.Dispatch<React.SetStateAction<GetItemResponse | undefined>>,
 ) {
-  const prices = await getItem(id);
+  const item = await getItem(id);
 
-  if (!prices) {
+  if (!item) {
     return;
   }
 
-  set(prices);
+  set(item);
 }
 
 function Item() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const [prices, setPrices] = useState<ItemPriceData[] | undefined>();
+  const [item, setItem] = useState<GetItemResponse | undefined>();
 
   useEffect(() => {
     if (!id) {
@@ -27,18 +31,46 @@ function Item() {
       return;
     }
 
-    handleItemPrices(id, setPrices);
+    handleItemPrices(id, setItem);
   }, [id, navigate]);
 
   return (
     <div>
-      <h1>Item {id}</h1>
+      <h1>{item?.data.name ?? `Item ${id}`}</h1>
 
-      {prices?.map((price) => (
-        <div key={price.ID}>
-          <p>High: {price.AvgHighPrice}</p>
-          <p>Low: {price.AvgLowPrice}</p>
-          <p>Timestamp: {price.PriceTimestamp}</p>
+      {item?.data && (
+        <div>
+          <p>{item.data.examine}</p>
+          <p>Value: {item.data.value.toLocaleString()}</p>
+          <p>High Alch: {item.data.highalch.toLocaleString()}</p>
+          <p>Low Alch: {item.data.lowalch.toLocaleString()}</p>
+          <p>Members: {item.data.members ? "Yes" : "No"}</p>
+          <p>GE Limit: {item.data.limit}</p>
+        </div>
+      )}
+
+      <h2>Price History</h2>
+
+      {item?.history.map((price: ItemPriceHistory) => (
+        <div key={price.id}>
+          <p>
+            High:{" "}
+            {price.avgHighPrice > 0
+              ? price.avgHighPrice.toLocaleString()
+              : "N/A"}
+          </p>
+
+          <p>
+            Low:{" "}
+            {price.avgLowPrice > 0 ? price.avgLowPrice.toLocaleString() : "N/A"}
+          </p>
+
+          <p>High Volume: {price.highVolume}</p>
+          <p>Low Volume: {price.lowVolume}</p>
+
+          <p>
+            Timestamp: {new Date(price.priceTimestamp * 1000).toLocaleString()}
+          </p>
         </div>
       ))}
     </div>

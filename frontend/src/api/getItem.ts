@@ -1,17 +1,34 @@
 import { API_BASE } from "./consts";
 
-export interface ItemPriceData {
-  ID: number;
-  ItemID: number;
-  PriceTimestamp: number;
-  AvgHighPrice: number;
-  AvgLowPrice: number;
-  HighVolume: number;
-  LowVolume: number;
-  CreatedAt: string;
+export interface ItemData {
+  examine: string;
+  id: number;
+  members: boolean;
+  lowalch: number;
+  limit: number;
+  value: number;
+  highalch: number;
+  icon: string;
+  name: string;
 }
 
-export async function getItem(id: string): Promise<ItemPriceData[] | null> {
+export interface ItemPriceHistory {
+  id: number;
+  itemId: number;
+  priceTimestamp: number;
+  avgHighPrice: number;
+  avgLowPrice: number;
+  highVolume: number;
+  lowVolume: number;
+  createdAt: string;
+}
+
+export interface GetItemResponse {
+  data: ItemData;
+  history: ItemPriceHistory[];
+}
+
+export async function getItem(id: string): Promise<GetItemResponse | null> {
   try {
     const res = await fetch(`${API_BASE}/item/${id}`, {
       method: "GET",
@@ -21,7 +38,7 @@ export async function getItem(id: string): Promise<ItemPriceData[] | null> {
       throw new Error("Failed to get item");
     }
 
-    const data: ItemPriceData[] = await res.json();
+    const data: GetItemResponse = await res.json();
 
     return data;
   } catch (err) {

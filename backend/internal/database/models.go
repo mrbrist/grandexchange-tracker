@@ -9,12 +9,12 @@ import (
 )
 
 type GePriceHistory struct {
-	ID             int64
-	ItemID         int32
-	PriceTimestamp int64
-	AvgHighPrice   int32
-	AvgLowPrice    int32
-	HighVolume     int64
-	LowVolume      int64
-	CreatedAt      time.Time
+	ID             int64     `json:"id"`
+	ItemID         int32     `json:"itemId"`
+	PriceTimestamp int64     `json:"priceTimestamp"`
+	AvgHighPrice   int32     `json:"avgHighPrice"`
+	AvgLowPrice    int32     `json:"avgLowPrice"`
+	HighVolume     int64     `json:"highVolume"`
+	LowVolume      int64     `json:"lowVolume"`
+	CreatedAt      time.Time `json:"createdAt"`
 }
