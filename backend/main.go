@@ -3,6 +3,7 @@ package main
 import (
 	"backend/internal/database"
 	"backend/internal/handlers"
+	"backend/internal/middleware"
 	"backend/internal/utils"
 	"database/sql"
 	"fmt"
@@ -45,20 +46,20 @@ func main() {
 	mux := http.NewServeMux()
 
 	// System
-	mux.HandleFunc("/health", cfg.Health)
+	mux.HandleFunc("/api/health", cfg.Health)
 
 	// API
 	// mux.HandleFunc("/items_info", cfg.ItemsInfo)
-	mux.HandleFunc("/list", cfg.ItemsList)
-	mux.HandleFunc("/item/{id}", cfg.Item)
+	mux.HandleFunc("/api/list", cfg.ItemsList)
+	mux.HandleFunc("/api/item/{id}", cfg.Item)
 
 	// TESTING
-	mux.HandleFunc("/count", cfg.Count)
-	mux.HandleFunc("/last", cfg.LastUpdate)
+	mux.HandleFunc("/api/count", cfg.Count)
+	mux.HandleFunc("/api/last", cfg.LastUpdate)
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Env.Port,
-		Handler: mux,
+		Handler: middleware.CORSMiddleware(mux),
 	}
 
 	log.Printf("Serving on: http://localhost:%s/\n", cfg.Env.Port)
