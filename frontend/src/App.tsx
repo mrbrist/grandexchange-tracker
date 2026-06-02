@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { getList, type ListData } from "./api/getList";
-import "./App.css";
 
 async function handleItemList(
   set: React.Dispatch<React.SetStateAction<ListData[] | undefined>>,
@@ -21,16 +20,9 @@ function App() {
     handleItemList(setList);
   });
 
-  return (
-    <>
-      {list?.map((i) => (
-        <a href={`/${i.id}`}>
-          {i.name}
-          <br />
-        </a>
-      ))}
-    </>
-  );
+  console.log(list);
+
+  return <></>;
 }
 
 export default App;
