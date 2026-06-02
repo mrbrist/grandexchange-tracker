@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getList, type ListData } from "./api/getList";
 
 async function handleItemList(
@@ -13,6 +13,24 @@ async function handleItemList(
   set(list);
 }
 
+function fuzzyMatch(text: string, query: string) {
+  text = text.toLowerCase();
+  query = query.toLowerCase();
+
+  let textIndex = 0;
+  let queryIndex = 0;
+
+  while (textIndex < text.length && queryIndex < query.length) {
+    if (text[textIndex] === query[queryIndex]) {
+      queryIndex++;
+    }
+
+    textIndex++;
+  }
+
+  return queryIndex === query.length;
+}
+
 function App() {
   const [list, setList] = useState<ListData[] | undefined>();
   const [query, setQuery] = useState("");
@@ -21,7 +39,13 @@ function App() {
     handleItemList(setList);
   }, []);
 
-  console.log(list);
+  const filteredList = useMemo(() => {
+    if (!list) return [];
+
+    if (!query.trim()) return list;
+
+    return list.filter((item) => fuzzyMatch(item.name, query));
+  }, [list, query]);
 
   return (
     <>
@@ -40,7 +64,19 @@ function App() {
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
-          {query}
+          {query ? (
+            <div className="mt-6 space-y-2">
+              {filteredList.slice(0, 25).map((item) => (
+                <a
+                  key={item.id}
+                  href={`/${item.id}`}
+                  className="block bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 hover:bg-zinc-800 transition-colors"
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
     </>
