@@ -15,6 +15,7 @@ async function handleItemList(
 
 function App() {
   const [list, setList] = useState<ListData[] | undefined>();
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     handleItemList(setList);
@@ -35,8 +36,11 @@ function App() {
               type="text"
               placeholder="Search for an item..."
               className="flex-1 px-6 py-5 bg-transparent text-lg outline-none placeholder:text-zinc-500"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
             />
           </div>
+          {query}
         </div>
       </div>
     </>
