@@ -24,7 +24,10 @@ function App() {
   return (
     <>
       {list?.map((i) => (
-        <p>{i.name}</p>
+        <a href={`/${i.id}`}>
+          {i.name}
+          <br />
+        </a>
       ))}
     </>
   );
