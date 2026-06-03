@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getList, type ListData } from "./api/getList";
+import { iconUrl } from "./helpers/icon";
 
 async function handleItemList(
   set: React.Dispatch<React.SetStateAction<ListData[] | undefined>>,
@@ -70,9 +71,15 @@ function App() {
                 <a
                   key={item.id}
                   href={`/${item.id}`}
-                  className="block bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 hover:bg-zinc-800 transition-colors"
+                  className="flex items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 hover:bg-zinc-800 transition-colors"
                 >
-                  {item.name}
+                  <img
+                    className="w-8 h-8 shrink-0"
+                    src={iconUrl(item.icon)}
+                    alt={item.name}
+                  />
+
+                  <span>{item.name}</span>
                 </a>
               ))}
             </div>
