@@ -9,11 +9,20 @@ import { useEffect, useState } from "react";
 async function handleItemPrices(
   id: string,
   set: React.Dispatch<React.SetStateAction<GetItemResponse | undefined>>,
+  navigate: any,
 ) {
   const item = await getItem(id);
 
   if (!item) {
     return;
+  }
+
+  if (!item?.history) {
+    navigate("/", {
+      state: {
+        error: "There was no history found for that item",
+      },
+    });
   }
 
   set(item);
@@ -31,7 +40,7 @@ function Item() {
       return;
     }
 
-    handleItemPrices(id, setItem);
+    handleItemPrices(id, setItem, navigate);
   }, [id, navigate]);
 
   return (

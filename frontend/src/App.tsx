@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getList, type ListData } from "./api/getList";
 import { iconUrl } from "./helpers/icon";
+import { useLocation, useNavigate } from "react-router-dom";
 
 async function handleItemList(
   set: React.Dispatch<React.SetStateAction<ListData[] | undefined>>,
@@ -33,12 +34,36 @@ function fuzzyMatch(text: string, query: string) {
 }
 
 function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [list, setList] = useState<ListData[] | undefined>();
   const [query, setQuery] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     handleItemList(setList);
   }, []);
+
+  useEffect(() => {
+    if (location.state?.error) {
+      setError(location.state.error);
+
+      // clear router state so refresh doesn't re-show it
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, location.pathname, navigate]);
+
+  // auto-hide error
+  useEffect(() => {
+    if (!error) return;
+
+    const timer = setTimeout(() => {
+      setError(null);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [error]);
 
   const filteredList = useMemo(() => {
     if (!list) return [];
@@ -51,6 +76,12 @@ function App() {
   return (
     <>
       <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center pt-20 px-4">
+        {error && (
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 rounded bg-red-500/20 border border-red-500 px-4 py-2 text-red-200 shadow-lg backdrop-blur">
+            {error}
+          </div>
+        )}
+
         <h1 className="text-5xl font-bold mb-10 tracking-tight">
           Grand Exchange Tracker
         </h1>
