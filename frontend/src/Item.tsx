@@ -1,4 +1,8 @@
-import { useNavigate, useParams } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+  type NavigateFunction,
+} from "react-router-dom";
 import {
   getItem,
   type GetItemResponse,
@@ -9,7 +13,7 @@ import { useEffect, useState } from "react";
 async function handleItemPrices(
   id: string,
   set: React.Dispatch<React.SetStateAction<GetItemResponse | undefined>>,
-  navigate: any,
+  navigate: NavigateFunction,
 ) {
   const item = await getItem(id);
 
