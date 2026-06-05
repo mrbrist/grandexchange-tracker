@@ -48,45 +48,29 @@ function Item() {
   }, [id, navigate]);
 
   return (
-    <div>
-      <h1>{item?.data.name ?? `Item ${id}`}</h1>
+    // <h1>{item?.data.name ?? `Item ${id}`}</h1>
 
-      {item?.data && (
-        <div>
-          <p>{item.data.examine}</p>
-          <p>Value: {item.data.value.toLocaleString()}</p>
-          <p>High Alch: {item.data.highalch.toLocaleString()}</p>
-          <p>Low Alch: {item.data.lowalch.toLocaleString()}</p>
-          <p>Members: {item.data.members ? "Yes" : "No"}</p>
-          <p>GE Limit: {item.data.limit}</p>
+    // {item?.data && (
+    //   <div>
+    //     <p>{item.data.examine}</p>
+    //     <p>Value: {item.data.value.toLocaleString()}</p>
+    //     <p>High Alch: {item.data.highalch.toLocaleString()}</p>
+    //     <p>Low Alch: {item.data.lowalch.toLocaleString()}</p>
+    //     <p>Members: {item.data.members ? "Yes" : "No"}</p>
+    //     <p>GE Limit: {item.data.limit}</p>
+    //   </div>
+    // )}
+    <>
+      <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center pt-10 px-4">
+        <a href="/" className="text-5xl font-bold mb-10 tracking-tight">
+          {item?.data.name ?? `Item ${id}`}
+        </a>
+
+        <div className="w-full max-w-2xl">
+          {/* <div className="flex items-center bg-zinc-900 border border-zinc-700 rounded-2xl overflow-hidden shadow-lg"></div> */}
         </div>
-      )}
-
-      <h2>Price History</h2>
-
-      {item?.history.map((price: ItemPriceHistory) => (
-        <div key={price.id}>
-          <p>
-            High:{" "}
-            {price.avgHighPrice > 0
-              ? price.avgHighPrice.toLocaleString()
-              : "N/A"}
-          </p>
-
-          <p>
-            Low:{" "}
-            {price.avgLowPrice > 0 ? price.avgLowPrice.toLocaleString() : "N/A"}
-          </p>
-
-          <p>High Volume: {price.highVolume}</p>
-          <p>Low Volume: {price.lowVolume}</p>
-
-          <p>
-            Timestamp: {new Date(price.priceTimestamp * 1000).toLocaleString()}
-          </p>
-        </div>
-      ))}
-    </div>
+      </div>
+    </>
   );
 }
 

@@ -60,7 +60,7 @@ function App() {
 
     const timer = setTimeout(() => {
       setError(null);
-    }, 3000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, [error]);
@@ -75,9 +75,9 @@ function App() {
 
   return (
     <>
-      <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center pt-20 px-4">
+      <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center pt-10 px-4">
         {error && (
-          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 rounded bg-red-500/20 border border-red-500 px-4 py-2 text-red-200 shadow-lg backdrop-blur">
+          <div className="fixed top-1.5 left-1/2 -translate-x-1/2 z-50 rounded bg-red-500/20 border border-red-500 px-2 py-1 text-red-200 shadow-lg backdrop-blur">
             {error}
           </div>
         )}
