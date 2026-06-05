@@ -3,12 +3,9 @@ import {
   useParams,
   type NavigateFunction,
 } from "react-router-dom";
-import {
-  getItem,
-  type GetItemResponse,
-  type ItemPriceHistory,
-} from "./api/getItem";
+import { getItem, type GetItemResponse } from "./api/getItem";
 import { useEffect, useState } from "react";
+import HistoryGraph from "./components/historyGraph";
 
 async function handleItemPrices(
   id: string,
@@ -67,6 +64,7 @@ function Item() {
             </div>
           )}
         </div>
+        {item?.history ? <HistoryGraph history={item?.history} /> : null}
       </div>
     </>
   );
