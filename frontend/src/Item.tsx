@@ -48,18 +48,6 @@ function Item() {
   }, [id, navigate]);
 
   return (
-    // <h1>{item?.data.name ?? `Item ${id}`}</h1>
-
-    // {item?.data && (
-    //   <div>
-    //     <p>{item.data.examine}</p>
-    //     <p>Value: {item.data.value.toLocaleString()}</p>
-    //     <p>High Alch: {item.data.highalch.toLocaleString()}</p>
-    //     <p>Low Alch: {item.data.lowalch.toLocaleString()}</p>
-    //     <p>Members: {item.data.members ? "Yes" : "No"}</p>
-    //     <p>GE Limit: {item.data.limit}</p>
-    //   </div>
-    // )}
     <>
       <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center pt-10 px-4">
         <a href="/" className="text-5xl font-bold mb-10 tracking-tight">
@@ -68,6 +56,16 @@ function Item() {
 
         <div className="w-full max-w-2xl">
           {/* <div className="flex items-center bg-zinc-900 border border-zinc-700 rounded-2xl overflow-hidden shadow-lg"></div> */}
+          {item?.data && (
+            <div>
+              <p>{item.data.examine}</p>
+              <p>Value: {item.data.value.toLocaleString()}</p>
+              <p>High Alch: {item.data.highalch.toLocaleString()}</p>
+              <p>Low Alch: {item.data.lowalch.toLocaleString()}</p>
+              <p>Members: {item.data.members ? "Yes" : "No"}</p>
+              <p>GE Limit: {item.data.limit}</p>
+            </div>
+          )}
         </div>
       </div>
     </>
