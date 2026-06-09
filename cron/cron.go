@@ -24,55 +24,84 @@ type ItemPriceHistory1h struct {
 	Timestamp int64                                `json:"timestamp"`
 }
 
-func StartScheduling(appName string, DB *database.Queries) error {
+func StartScheduling(appName string, DB *database.Queries) (gocron.Scheduler, error) {
 	s, err := gocron.NewScheduler()
 	if err != nil {
-		return err
+		return nil, err
 	}
-
-	fmt.Println("Creating scheduler job...")
 
 	ts, err := DB.GetLatestTimestamp(context.Background())
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	// now := time.Now().Unix()
-
 	lastUpdate := time.Unix(ts, 0)
-	fmt.Printf("%slast update:%s %d\n", ColorRed, ColorNone, lastUpdate.Unix())
-	fmt.Printf("%snow:%s %d\n", ColorRed, ColorNone, time.Now().Unix())
 
-	shouldRunNow := time.Now().Unix()-lastUpdate.Unix() >= int64(time.Hour.Seconds())*2
-
-	fmt.Printf("%stime since update:%s %d\n", ColorRed, ColorNone, time.Now().Unix()-lastUpdate.Unix())
-
-	_, err = s.NewJob(
-		gocron.DurationJob(time.Hour),
+	job, err := s.NewJob(
+		gocron.CronJob(
+			"0 * * * *",
+			false,
+		),
 		gocron.NewTask(func() error {
-			fmt.Printf("%sRUNNING PRICE HISTORY JOB%s\n", ColorPurple, ColorNone)
 			return UpdatePriceHistory1h(appName, DB)
 		}),
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	shouldRunNow := time.Since(lastUpdate) >= 2*time.Hour
+
 	if shouldRunNow {
-		fmt.Printf("%sData is stale → running initial update immediately%s\n", ColorYellow, ColorNone)
+		fmt.Printf("%sData is stale → running initial update immediately%s\n",
+			ColorYellow, ColorNone)
+
 		go func() {
 			_ = UpdatePriceHistory1h(appName, DB)
 		}()
-	} else {
-		fmt.Printf("%sData is fresh → scheduler will handle next run%s\n", ColorYellow, ColorNone)
 	}
 
-	fmt.Println("Starting scheduler...")
 	s.Start()
 
-	fmt.Println("Scheduler started successfully")
+	nextRun, err := job.NextRun()
+	if err != nil {
+		return nil, err
+	}
 
-	return nil
+	fmt.Printf(
+		"Next run: %s\n",
+		nextRun.Format(time.RFC3339),
+	)
+
+	// Countdown logger
+	go func() {
+		for {
+			next, err := job.NextRun()
+			if err != nil {
+				fmt.Printf("failed to get next run: %v\n", err)
+				return
+			}
+
+			for {
+				remaining := time.Until(next)
+
+				if remaining <= 0 {
+					break
+				}
+
+				fmt.Printf(
+					"\rNext price update in %02d:%02d:%02d",
+					int(remaining.Hours()),
+					int(remaining.Minutes())%60,
+					int(remaining.Seconds())%60,
+				)
+
+				time.Sleep(time.Second)
+			}
+		}
+	}()
+
+	return s, nil
 }
 
 func UpdatePriceHistory1h(appName string, DB *database.Queries) error {

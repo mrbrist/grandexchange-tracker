@@ -15,13 +15,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	dbQueries := database.New(db)
 
-	// Start cron scheduling
-	err = StartScheduling(envCfg.APIAppName, dbQueries)
+	scheduler, err := StartScheduling(envCfg.APIAppName, dbQueries)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	select {}
+	defer scheduler.Shutdown()
+
+	select {} // keep process alive
 }
