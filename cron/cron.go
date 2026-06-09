@@ -24,6 +24,20 @@ type ItemPriceHistory1h struct {
 	Timestamp int64                                `json:"timestamp"`
 }
 
+var globalJob gocron.Job
+
+func PrintNextRun() {
+	nextRun, err := globalJob.NextRun()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Printf(
+		"Next run: %s\n",
+		nextRun.Format(time.RFC822),
+	)
+}
+
 func StartScheduling(appName string, DB *database.Queries) (gocron.Scheduler, error) {
 	s, err := gocron.NewScheduler()
 	if err != nil {
@@ -39,7 +53,8 @@ func StartScheduling(appName string, DB *database.Queries) (gocron.Scheduler, er
 
 	job, err := s.NewJob(
 		gocron.CronJob(
-			"0 * * * *",
+			"*/10 * * * *", // 10 mins
+			// "0 * * * *", // 1 hr
 			false,
 		),
 		gocron.NewTask(func() error {
@@ -49,6 +64,8 @@ func StartScheduling(appName string, DB *database.Queries) (gocron.Scheduler, er
 	if err != nil {
 		return nil, err
 	}
+
+	globalJob = job
 
 	shouldRunNow := time.Since(lastUpdate) >= 2*time.Hour
 
@@ -66,15 +83,7 @@ func StartScheduling(appName string, DB *database.Queries) (gocron.Scheduler, er
 
 	s.Start()
 
-	nextRun, err := job.NextRun()
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Printf(
-		"Next run: %s\n",
-		nextRun.Format(time.RFC822),
-	)
+	PrintNextRun()
 
 	return s, nil
 }
@@ -131,7 +140,8 @@ func UpdatePriceHistory1h(appName string, DB *database.Queries) error {
 			continue
 		}
 	}
-	fmt.Printf("Added new data to database with timestamp: %d\n", pricehistory1h.Timestamp)
+	fmt.Printf("%sAdded new data to database with timestamp: %d%s\n", ColorPurple, pricehistory1h.Timestamp, ColorNone)
 	fmt.Printf("%swaiting for next update in 1h...%s\n", ColorGreen, ColorNone)
+	PrintNextRun()
 	return nil
 }
