@@ -53,12 +53,15 @@ func StartScheduling(appName string, DB *database.Queries) (gocron.Scheduler, er
 	shouldRunNow := time.Since(lastUpdate) >= 2*time.Hour
 
 	if shouldRunNow {
-		fmt.Printf("%sData is stale → running initial update immediately%s\n",
+		fmt.Printf("%sData is stale → running update immediately%s\n",
 			ColorYellow, ColorNone)
 
 		go func() {
 			_ = UpdatePriceHistory1h(appName, DB)
 		}()
+	} else {
+		fmt.Printf("%sData is recent → waiting...%s\n",
+			ColorYellow, ColorNone)
 	}
 
 	s.Start()
@@ -70,36 +73,8 @@ func StartScheduling(appName string, DB *database.Queries) (gocron.Scheduler, er
 
 	fmt.Printf(
 		"Next run: %s\n",
-		nextRun.Format(time.RFC3339),
+		nextRun.Format(time.RFC822),
 	)
-
-	// Countdown logger
-	go func() {
-		for {
-			next, err := job.NextRun()
-			if err != nil {
-				fmt.Printf("failed to get next run: %v\n", err)
-				return
-			}
-
-			for {
-				remaining := time.Until(next)
-
-				if remaining <= 0 {
-					break
-				}
-
-				fmt.Printf(
-					"\rNext price update in %02d:%02d:%02d",
-					int(remaining.Hours()),
-					int(remaining.Minutes())%60,
-					int(remaining.Seconds())%60,
-				)
-
-				time.Sleep(time.Second)
-			}
-		}
-	}()
 
 	return s, nil
 }
