@@ -1,8 +1,8 @@
-package utils
+package main
 
 import (
-	"backend/internal/database"
 	"context"
+	"cron/internal/database"
 	"encoding/json"
 	"fmt"
 	"net/http"
