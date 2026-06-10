@@ -53,8 +53,8 @@ func StartScheduling(appName string, DB *database.Queries) (gocron.Scheduler, er
 
 	job, err := s.NewJob(
 		gocron.CronJob(
-			"*/10 * * * *", // 10 mins
-			// "0 * * * *", // 1 hr
+			//"*/10 * * * *", // 10 mins
+			"0 * * * *", // 1 hr
 			false,
 		),
 		gocron.NewTask(func() error {
