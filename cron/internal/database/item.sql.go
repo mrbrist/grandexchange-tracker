@@ -116,3 +116,32 @@ func (q *Queries) GetLatestTimestamp(ctx context.Context) (int64, error) {
 	err := row.Scan(&latest_timestamp)
 	return latest_timestamp, err
 }
+
+const getUniqueTimestamps = `-- name: GetUniqueTimestamps :many
+SELECT DISTINCT price_timestamp
+FROM ge_price_history
+ORDER BY price_timestamp
+`
+
+func (q *Queries) GetUniqueTimestamps(ctx context.Context) ([]int64, error) {
+	rows, err := q.db.QueryContext(ctx, getUniqueTimestamps)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []int64
+	for rows.Next() {
+		var price_timestamp int64
+		if err := rows.Scan(&price_timestamp); err != nil {
+			return nil, err
+		}
+		items = append(items, price_timestamp)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

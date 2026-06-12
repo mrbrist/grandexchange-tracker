@@ -40,6 +40,9 @@ start-be:
 start-fe:
 	cd frontend && npm run dev
 
+start-updater:
+	cd updater && go run .
+
 dev: start-be start-fe
 
 # ---------- DATABASE ----------

@@ -22,3 +22,7 @@ WHERE item_id = $1;
 -- name: CountAllRecords :one
 SELECT COUNT(*) AS total_records
 FROM ge_price_history;
+-- name: GetUniqueTimestamps :many
+SELECT DISTINCT price_timestamp
+FROM ge_price_history
+ORDER BY price_timestamp;

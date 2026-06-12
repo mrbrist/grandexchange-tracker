@@ -18,7 +18,7 @@ sql:
     engine: "postgresql"
     gen:
       go:
-        out: "../cron/internal/database"
+        out: "../updater/internal/database"
         overrides:
           - db_type: "pg_catalog.numeric"
             go_type: "float64"

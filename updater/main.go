@@ -25,5 +25,7 @@ func main() {
 
 	defer scheduler.Shutdown()
 
+	GetMissingTimestamps(dbQueries)
+
 	select {} // keep process alive
 }
