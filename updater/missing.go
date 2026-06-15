@@ -5,7 +5,6 @@ import (
 	"cron/internal/database"
 	"fmt"
 	"log"
-	"slices"
 	"time"
 )
 
@@ -31,9 +30,25 @@ func GetMissingTimestamps(DB *database.Queries) {
 
 	var result []int64
 
-	for _, t := range allTimestamps {
-		if !slices.Contains(timestamps, t) {
-			result = append(result, t)
+	const tolerance = 3600
+
+	for _, target := range allTimestamps {
+		found := false
+
+		for _, existing := range timestamps {
+			diff := target - existing
+			if diff < 0 {
+				diff = -diff
+			}
+
+			if diff <= tolerance {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			result = append(result, target)
 		}
 	}
 
