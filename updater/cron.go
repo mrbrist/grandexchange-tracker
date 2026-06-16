@@ -3,13 +3,12 @@ package main
 import (
 	"context"
 	"cron/internal/database"
+	"cron/scheduler"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"time"
-
-	"github.com/go-co-op/gocron/v2"
 )
 
 type ItemPriceHistoryDataPoint struct {
@@ -24,68 +23,61 @@ type ItemPriceHistory1h struct {
 	Timestamp int64                                `json:"timestamp"`
 }
 
-var globalJob gocron.Job
-
-func PrintNextRun() {
-	nextRun, err := globalJob.NextRun()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Printf(
-		"Next run: %s\n",
-		nextRun.Format(time.RFC822),
-	)
-}
-
-func StartScheduling(appName string, DB *database.Queries) (gocron.Scheduler, error) {
-	s, err := gocron.NewScheduler()
+func StartScheduling(appName string, DB *database.Queries) (*scheduler.Scheduler, error) {
+	s, err := scheduler.New()
 	if err != nil {
 		return nil, err
 	}
 
-	ts, err := DB.GetLatestTimestamp(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	lastUpdate := time.Unix(ts, 0)
-
-	job, err := s.NewJob(
-		gocron.CronJob(
-			//"*/10 * * * *", // 10 mins
-			"0 * * * *", // 1 hr
-			false,
-		),
-		gocron.NewTask(func() error {
+	err = s.AddAndRunNow(
+		"price-history-1h",
+		"0 * * * *",
+		func() error {
 			return UpdatePriceHistory1h(appName, DB)
-		}),
+		},
+		true,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	globalJob = job
+	err = s.AddAndRunNow(
+		"get-missing-timestamps",
+		"0 * * * *",
+		func() error {
+			return GetMissingTimestamps(DB, &globalMissing)
+		},
+		true,
+	)
+	if err != nil {
+		return nil, err
+	}
 
-	shouldRunNow := time.Since(lastUpdate) >= 2*time.Hour
+	err = s.Add(
+		"update-missing-timestamp",
+		"*/1 * * * *",
+		func() error {
+			if len(globalMissing) == 0 {
+				return nil
+			}
 
-	if shouldRunNow {
-		fmt.Printf("%sData is stale → running update immediately%s\n",
-			ColorYellow, ColorNone)
+			ts := globalMissing[0]
+			globalMissing = globalMissing[1:]
 
-		go func() {
-			_ = UpdatePriceHistory1h(appName, DB)
-		}()
-	} else {
-		fmt.Printf("%sData is recent → waiting...%s\n",
-			ColorYellow, ColorNone)
+			return UpdatePriceHistoryForTimestamp(appName, DB, ts)
+		},
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	s.Start()
-
-	PrintNextRun()
-
 	return s, nil
+}
+
+func UpdatePriceHistoryForTimestamp(appName string, DB *database.Queries, timestamp int64) error {
+	fmt.Println(timestamp)
+	return nil
 }
 
 func UpdatePriceHistory1h(appName string, DB *database.Queries) error {
@@ -142,6 +134,5 @@ func UpdatePriceHistory1h(appName string, DB *database.Queries) error {
 	}
 	fmt.Printf("%sAdded new data to database with timestamp: %d%s\n", ColorPurple, pricehistory1h.Timestamp, ColorNone)
 	fmt.Printf("%swaiting for next update in 1h...%s\n", ColorGreen, ColorNone)
-	PrintNextRun()
 	return nil
 }

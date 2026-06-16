@@ -19,11 +19,11 @@ func GenerateWeekTimestamps() []int64 {
 	return timestamps
 }
 
-func GetMissingTimestamps(DB *database.Queries) {
+func GetMissingTimestamps(DB *database.Queries, globalMissing *[]int64) error {
 	timestamps, err := DB.GetUniqueTimestamps(context.Background())
 	if err != nil {
 		log.Fatal(err)
-		return
+		return err
 	}
 
 	allTimestamps := GenerateWeekTimestamps()
@@ -51,8 +51,7 @@ func GetMissingTimestamps(DB *database.Queries) {
 			result = append(result, target)
 		}
 	}
-
-	fmt.Println(len(allTimestamps))
-	fmt.Println(len(timestamps))
-	fmt.Println(len(result))
+	*globalMissing = result
+	fmt.Printf("%sThere are %d mssing timestamps!%s\n", ColorBlue, len(result), ColorNone)
+	return nil
 }

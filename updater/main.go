@@ -8,6 +8,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+var globalMissing []int64
+
 func main() {
 	envCfg := SetupEnvCfg()
 
@@ -24,8 +26,6 @@ func main() {
 	}
 
 	defer scheduler.Shutdown()
-
-	GetMissingTimestamps(dbQueries)
 
 	select {} // keep process alive
 }
