@@ -2,7 +2,6 @@ package scheduler
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/go-co-op/gocron/v2"
 )
@@ -25,7 +24,7 @@ func (s *Scheduler) Add(
 	cronExpr string,
 	task func() error,
 ) error {
-	job, err := s.s.NewJob(
+	_, err := s.s.NewJob(
 		gocron.CronJob(cronExpr, false),
 		gocron.NewTask(task),
 	)
@@ -33,11 +32,11 @@ func (s *Scheduler) Add(
 		return err
 	}
 
-	next, _ := job.NextRun()
-	fmt.Printf("[%s] next run: %s\n",
-		name,
-		next.Format(time.RFC822),
-	)
+	// next, _ := job.NextRun()
+	// fmt.Printf("[%s] next run: %s\n",
+	// 	name,
+	// 	next.Format(time.RFC822),
+	// )
 
 	return nil
 }
