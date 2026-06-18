@@ -11,7 +11,8 @@ VALUES ($1, $2, $3, $4, $5, $6);
 -- name: GetItemHistory :many
 SELECT *
 FROM ge_price_history
-WHERE item_id = $1;
+WHERE item_id = $1
+ORDER BY price_timestamp ASC;
 -- name: GetLatestTimestamp :one
 SELECT COALESCE(MAX(price_timestamp), 0)::BIGINT AS latest_timestamp
 FROM ge_price_history;

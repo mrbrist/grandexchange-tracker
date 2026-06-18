@@ -71,6 +71,7 @@ const getItemHistory = `-- name: GetItemHistory :many
 SELECT id, item_id, price_timestamp, avg_high_price, avg_low_price, high_volume, low_volume, created_at
 FROM ge_price_history
 WHERE item_id = $1
+ORDER BY price_timestamp ASC
 `
 
 func (q *Queries) GetItemHistory(ctx context.Context, itemID int32) ([]GePriceHistory, error) {
