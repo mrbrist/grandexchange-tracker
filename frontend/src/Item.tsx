@@ -29,6 +29,18 @@ async function handleItemPrices(
   set(item);
 }
 
+function getLatestHighPrice(item: GetItemResponse): string {
+  return String(
+    item.history[item.history.length - 1].avgHighPrice.toLocaleString(),
+  );
+}
+
+function getLatestLowPrice(item: GetItemResponse): string {
+  return String(
+    item.history[item.history.length - 1].avgLowPrice.toLocaleString(),
+  );
+}
+
 function Item() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -57,7 +69,6 @@ function Item() {
               <p className="text-sm text-zinc-400 mb-3 font-bold">
                 {item.data.examine}
               </p>
-
               <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
                 <span>
                   <span className="text-zinc-500">Value:</span>{" "}
@@ -82,6 +93,17 @@ function Item() {
                 <span>
                   <span className="text-zinc-500">Members:</span>{" "}
                   {item.data.members ? "Yes" : "No"}
+                </span>
+              </div>
+
+              <div className="pt-4 flex flex-wrap gap-x-6 gap-y-2 text-lg">
+                <span>
+                  <span className="text-blue-500 font-bold">High:</span>{" "}
+                  {item ? <span>{getLatestHighPrice(item)}</span> : null}
+                </span>
+                <span>
+                  <span className="text-red-400 font-bold">Low:</span>{" "}
+                  {item ? <span>{getLatestLowPrice(item)}</span> : null}
                 </span>
               </div>
             </div>
