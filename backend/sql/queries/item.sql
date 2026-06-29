@@ -12,6 +12,10 @@ VALUES ($1, $2, $3, $4, $5, $6);
 SELECT *
 FROM ge_price_history
 WHERE item_id = $1
+    AND price_timestamp >= EXTRACT(
+        EPOCH
+        FROM (NOW() - INTERVAL '7 days')
+    )::BIGINT
 ORDER BY price_timestamp ASC;
 -- name: GetLatestTimestamp :one
 SELECT COALESCE(MAX(price_timestamp), 0)::BIGINT AS latest_timestamp

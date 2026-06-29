@@ -71,6 +71,10 @@ const getItemHistory = `-- name: GetItemHistory :many
 SELECT id, item_id, price_timestamp, avg_high_price, avg_low_price, high_volume, low_volume, created_at
 FROM ge_price_history
 WHERE item_id = $1
+    AND price_timestamp >= EXTRACT(
+        EPOCH
+        FROM (NOW() - INTERVAL '7 days')
+    )::BIGINT
 ORDER BY price_timestamp ASC
 `
 
