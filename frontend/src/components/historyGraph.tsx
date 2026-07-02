@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import Chart from "chart.js/auto";
-import { getRelativePosition } from "chart.js/helpers";
+import Chart, { Legend } from "chart.js/auto";
+import "chartjs-adapter-date-fns";
 import { type ItemPriceHistory } from "../api/getItem";
 
 interface Props {
@@ -19,36 +19,47 @@ function HistoryGraph({ history }: Props) {
     chartRef.current = new Chart(canvasRef.current, {
       type: "line",
       data: {
-        labels: history.map((h) =>
-          new Date(h.priceTimestamp * 1000).toLocaleDateString(),
-        ),
         datasets: [
           {
             label: "Average High Price",
-            data: history.map((h) =>
-              h.avgHighPrice === 0 ? null : h.avgHighPrice,
-            ),
+            data: history.map((h) => ({
+              x: h.priceTimestamp * 1000,
+              y: h.avgHighPrice || null,
+            })),
+            tension: 0.1,
             spanGaps: true,
-            borderWidth: 2,
           },
           {
             label: "Average Low Price",
-            data: history.map((h) =>
-              h.avgLowPrice === 0 ? null : h.avgLowPrice,
-            ),
+            data: history.map((h) => ({
+              x: h.priceTimestamp * 1000,
+              y: h.avgLowPrice || null,
+            })),
+            tension: 0.1,
             spanGaps: true,
-            borderWidth: 2,
           },
         ],
       },
       options: {
         responsive: true,
+        plugins: {
+          legend: {
+            position: "bottom",
+          },
+        },
         interaction: {
           mode: "nearest",
           intersect: false,
         },
         scales: {
           x: {
+            type: "time",
+            time: {
+              unit: "day",
+              displayFormats: {
+                day: "MMM d",
+              },
+            },
             title: {
               display: true,
               text: "Date",
@@ -61,20 +72,6 @@ function HistoryGraph({ history }: Props) {
             },
             beginAtZero: false,
           },
-        },
-        onClick: (e) => {
-          const chart = chartRef.current;
-          if (!chart) return;
-
-          const canvasPosition = getRelativePosition(e, chart);
-
-          const dataX = chart.scales.x.getValueForPixel(canvasPosition.x);
-          const dataY = chart.scales.y.getValueForPixel(canvasPosition.y);
-
-          console.log("Clicked:", {
-            dataIndex: dataX,
-            value: dataY,
-          });
         },
       },
     });
