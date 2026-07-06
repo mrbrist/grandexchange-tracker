@@ -1,6 +1,6 @@
-<!-- ![example](https://github.com/mrbrist/grandexcahneg-tracker/example.png "Logo Title Text 1") -->
-
 # Grand Exchange Tracker
+
+![example](https://github.com/mrbrist/grandexchange-tracker/blob/main/example.png "example image")
 
 An item price history tracker for Old School Runescape's Grand Exchange
 
