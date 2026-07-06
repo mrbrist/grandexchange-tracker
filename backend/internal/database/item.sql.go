@@ -150,3 +150,13 @@ func (q *Queries) GetUniqueTimestamps(ctx context.Context) ([]int64, error) {
 	}
 	return items, nil
 }
+
+const removeRecordsOlderThanDate = `-- name: RemoveRecordsOlderThanDate :exec
+DELETE FROM ge_price_history
+WHERE price_timestamp < $1
+`
+
+func (q *Queries) RemoveRecordsOlderThanDate(ctx context.Context, priceTimestamp int64) error {
+	_, err := q.db.ExecContext(ctx, removeRecordsOlderThanDate, priceTimestamp)
+	return err
+}

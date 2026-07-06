@@ -31,3 +31,6 @@ FROM ge_price_history;
 SELECT DISTINCT price_timestamp
 FROM ge_price_history
 ORDER BY price_timestamp;
+-- name: RemoveRecordsOlderThanDate :exec
+DELETE FROM ge_price_history
+WHERE price_timestamp < $1;
