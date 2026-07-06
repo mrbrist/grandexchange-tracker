@@ -71,8 +71,31 @@ func StartScheduling(appName string, DB *database.Queries) (*scheduler.Scheduler
 		return nil, err
 	}
 
+	err = s.AddAndRunNow(
+		"cleandb",
+		"*/1 * * * *",
+		func() error {
+			return CleanDB(appName, DB)
+		},
+		true,
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	s.Start()
 	return s, nil
+}
+
+func CleanDB(appName string, DB *database.Queries) error {
+	oneWeekAgo := time.Now().AddDate(0, 0, -7)
+	fmt.Printf("Removing records older than: %s", oneWeekAgo)
+	err := DB.RemoveRecordsOlderThanDate(context.Background(), oneWeekAgo.Unix())
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func UpdatePriceHistoryForTimestamp(appName string, DB *database.Queries, timestamp int64) error {
