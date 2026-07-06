@@ -6,6 +6,7 @@ import {
 import { getItem, type GetItemResponse } from "./api/getItem";
 import { useEffect, useState } from "react";
 import HistoryGraph from "./components/historyGraph";
+import { iconUrl } from "./helpers/icon";
 
 async function handleItemPrices(
   id: string,
@@ -59,8 +60,20 @@ function Item() {
   return (
     <>
       <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center pt-10 px-4">
-        <a href="/" className="text-5xl font-bold mb-10">
-          {item?.data.name ?? `Item ${id}`}
+        <a
+          href="/"
+          className="mb-10 inline-flex items-center gap-3 text-5xl font-bold"
+        >
+          {item && (
+            <>
+              <img
+                className="h-12 w-12 shrink-0"
+                src={iconUrl(item.data.icon)}
+                alt={item.data.name}
+              />
+              <span>{item.data.name}</span>
+            </>
+          )}
         </a>
 
         <div className="w-full max-w-4xl space-y-6">
