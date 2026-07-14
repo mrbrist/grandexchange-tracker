@@ -24,3 +24,10 @@ The updater is the important part, without it the data will become stale it is a
 1. Clone the project
 2. Setup the .env files
 3. Run `make dev -j` in the root folder and `make start-updater` in another terminal window
+
+## Usage
+1. Go to the website on the port that is printed into the terminal when you start the web app
+2. Begin to type the name of an item and pick from the options that show up
+
+## Contributing
+If you'd like to contribute, please fork the repository and open a pull request to the `main` branch.
