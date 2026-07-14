@@ -4,10 +4,14 @@
 
 An item price history tracker for Old School Runescape's Grand Exchange
 
-Written in Go + React
+Written in Go + React (Typescript)
+
+## Motivation
+This is one of several projects on my journey to learning the Go + Typescript tech stack and has gone through a few itterations in how the projects are structured and I landed on this structure as it is the most modular and easiest to understand
+
+This was a project that I wanted to do because I play OldSchool Runescape and it is easier to work on a complex project when you know what success looks like
 
 ## How it works
-
 This project is split into 3 destinct parts:
 
 1. Frontend
@@ -16,8 +20,7 @@ This project is split into 3 destinct parts:
 
 The updater is the important part, without it the data will become stale it is also important for the updater to be seperate from the backend in order for them to run concurrently without causeing any issues and without producing messy code
 
-## How to run it
-
+## Quickstart
 1. Clone the project
 2. Setup the .env files
 3. Run `make dev -j` in the root folder and `make start-updater` in another terminal window
