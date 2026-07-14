@@ -20,7 +20,7 @@ This project is split into 3 destinct parts:
 
 The updater is the important part, without it the data will become stale it is also important for the updater to be seperate from the backend in order for them to run concurrently without causeing any issues and without producing messy code
 
-## Quickstart
+## Quick Start
 1. Clone the project
 2. Setup the .env files
 3. Run `make dev -j` in the root folder and `make start-updater` in another terminal window
